@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+import argparse
+import shutil
+from pathlib import Path
+
+import site
+
+def task_init():
+    print ('Initializing LightEx in current directory.')
+    #file_parent = Path(__file__).resolve().parent
+    asset_dir = Path(site.getsitepackages()[0]) / 'lightex' / 'assets' 
+    if not asset_dir.exists():
+        raise ValueError(f'Unable to find asset dir: {asset_dir}')
+
+    config_file = asset_dir / 'lxconfig.py' 
+    run_file = asset_dir / 'run_expts.py'
+
+    cwd = Path.cwd()
+    shutil.copy2(config_file, cwd)
+    shutil.copy2(run_file, cwd)
+
+
+
+
+def main(args):
+    if args.sub_cmd == 'init':
+        task_init()
+    elif args.sub_cmd == 'show':
+        #args.expt
+        from lightex.qviz.show import show_all_runs
+        show_all_runs()
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser("LightEx CLI")
+    commands = parser.add_subparsers(title='LightEx sub-commands', dest="sub_cmd")
+
+    init_parser = commands.add_parser('init')
+
+    show_parser = commands.add_parser('show')
+    show_parser.add_argument('--expt', '-e')
+
+    args = parser.parse_args()
+    #print (args)
+    main(args)

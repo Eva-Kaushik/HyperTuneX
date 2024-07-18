@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  mlflow:
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+      - MLDATA=${MLDATA}
+      - LTEX=${LTEX}
+      - UID=${UID}
+      - GID=${GID}
+    #user: "${UID}:${GID}"
+    build: 
+      context: ./mlflow
+      dockerfile: Dockerfile
+      args:
+        MLDATA: ${MLDATA}
+        LTEX: ${LTEX}
+        UID: ${UID}
+        GID: ${GID}
+    network_mode: host
+    image: mlflow-server
+    container_name: mlflow
+    #command: >-
+    # sh -c "echo ${UID} ${GID} ${MLDATA} && umask 0000"  
+    ports:
+      - "5000:5000"
+    volumes:
+     - /tmp/ltex/:/tmp/ltex/
